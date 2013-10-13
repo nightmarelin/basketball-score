@@ -1,0 +1,269 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+/* Reset */
+body,html,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,header,menu,section,p,input{padding:0;margin:0;}
+body{font-family:Microsoft Yahei, Arial, Helvetica, sans-serif; }
+body,textarea,select,input,button{font-size:12px; color:#333;}
+html,body{width:100%; height:100%; border:0;}
+h1,h2,h3,h4,h5,h6{font-size:100%;}
+em,i{font-style:normal;text-align:left;}
+html,body,img,iframe{border:0;}
+textarea{resize:none; overflow:auto;}
+input:focus,textarea:focus,span:focus{outline:none;} /* 去掉chrome下input和textarea的选中发光样式 */
+li,s{list-style:none;}
+img, .txt{border:0;}
+body,div,span,p,i,em,strong{cursor:default;}
+a[hidefocus]{outline:none;}
+a{text-decoration:none;}
+a:hover{text-decoration:underline;}
+a,a *, .f-hand, .f-hand *{cursor:pointer;}
+table{ border-collapse:collapse; table-layout:fixed;}
+/* Function */
+.f-cb:after{clear:both;content:'.';display:block;height:0;visibility:hidden;}/* 清浮动 */
+.f-cb{*zoom:1;}
+.f-ib{display:inline-block; *display:inline; *zoom:1}
+.f-pr{position:relative;zoom:1;}
+.f-pa{position:absolute;}
+.f-hide,.js-hide{display:none;}
+.f-vhide,.js-vhide{visibility:hidden;}
+.f-oh{overflow:hidden;}
+.f-fl{float:left;}
+.f-fr{float:right;}
+.f-sep{margin-left:5px; margin-right:5px;}
+.f-ff0{font-family:Arial, Helvetica, sans-serif;}/* Arial */
+.f-ff1{font-family:simsun,\5b8b\4f53;}/* 宋体 */
+.f-fs0{font-size:12px;}
+.f-fs1{font-size:14px;}
+.f-fs2{font-size:16px;}
+.f-fs3{font-size:18px;}
+.f-fw0{font-weight:normal;}
+.f-fw1{font-weight:bold;}
+.f-mgt5{margin-top:5px;}
+.f-ul, .f-ul:hover{ text-decoration:underline;}
+.f-noul,.f-noul:hover{ text-decoration:none;}
+.f-pre{word-wrap:break-word; word-break:break-all;}
+.f-thide{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.f-nw{white-space:nowrap;}
+.f-tid{text-indent:-9999px;}
+.f-nobd{border:none;}
+.f-tc{text-align:center;}
+.f-vam{vertical-align: middle;}
+/* layout */
+html,body{overflow:hidden;}
+body{background-color:#000;}
+.g-doc{margin-top:100px;}
+.m-team{width:30%;text-align:center;}
+.m-team .title{font-size:60px;}
+.m-team .score{font-size:200px;}
+.m-team.teama{float:left;color:#f00;}
+.m-team.teamb{float:right;color:#0f0;}
+.m-pinfo{float:left;width:40%;text-align:center;color:#ff0;}
+.m-pinfo .title{font-size:50px;}
+.m-pinfo .time{font-size:150px;}
+.m-console{position:absolute;width:100%;height:200px;padding:20px;bottom:-240px;left:0;background-color:#fff;}
+.m-console .itm{margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="g-doc">
+  <div class="m-team teama">
+    <h1 class="title" id="nameRedDiv">红队名称</h1>
+    <div class="score" id="scoreRedDiv">00</div>
+  </div>
+  <div class="m-pinfo">
+    <div class="title" id="playPeriod">第一节</div>
+    <div class="time" id="allTimeDiv">00:00</div>
+    <div class="time" id="24TimeDiv">0</div>
+  </div>
+  <div class="m-team teamb">
+    <h1 class="title" id="nameGreenDiv">绿队名称</h1>
+    <div class="score" id="scoreGreenDiv">00</div>
+  </div>
+  <div class="m-console" id="console">
+  <form onsubmit="return false;" id="consoleForm">
+  	<div class="itm">
+  	  <input name="teama" type="text" placeholder="红队名称" value=""/>
+  	  <input name="teamb" type="text" placeholder="绿队名称" value=""/>
+  	</div>
+  	<div class="itm">
+  	  <label><input name="period" type="radio" value="一"/><span>第一节</label>
+  	  <label><input name="period" type="radio" value="二"/><span>第二节</label>
+  	  <label><input name="period" type="radio" value="三"/><span>第三节</label>
+  	  <label><input name="period" type="radio" value="四"/><span>第四节</label>
+  	</div>
+  	<div class="itm">
+  	  <input name="scorea" type="text" placeholder="红队分数" value=""/>
+  	  <input name="updatea" type="button" value="修改红队分数"/>
+  	</div>
+  	<div class="itm">
+  	  <input name="scoreb" type="text" placeholder="绿队分数" value=""/>
+  	  <input name="updateb" type="button" value="修改绿队分数"/>
+  	</div>
+  	<div class="itm">
+  	  <input name="mtime" type="text" value=""/>分
+  	  <input name="stime" type="text" value=""/>秒
+  	  <input name="updatet" type="button" value="修改比赛时间"/>
+  	</div>
+  </form>
+  </div>
+</div>
+<script type="text/javascript" src="jquery-1.7.2.js"></script>
+<script type="text/javascript">
+var scoreRed = 0,        // 红队得分
+    scoreGreen = 0,      // 绿队得分
+    play24Time = 0,      // 24秒倒计时
+    playTotalTime = 0;   // 每节比赛倒计时
+var scoreRedNode = $("#scoreRedDiv"),
+    scoreGreenNode = $("#scoreGreenDiv"),
+    play24TimeNode = $("#24TimeDiv"),
+    playTotalTimeNode = $("#allTimeDiv");
+function setRed(_score){
+	scoreRedNode.text((_score < 10 ? "0" : "") + _score);
+}
+function plusRed(){
+	setRed(++scoreRed);
+}
+function minusRed(){
+	setRed(--scoreRed);
+}
+function setGreen(_score){
+	scoreGreenNode.text((_score < 10 ? "0" : "") + _score);
+}
+function plusGreen(){
+	setGreen(++scoreGreen);
+}
+function minusGreen(){
+	setGreen(--scoreGreen);
+}
+function formatTime(_number){
+	return (_number<10?'0':'')+_number;
+}
+// 每节倒计时逻辑
+var _allTimer;
+function updateTotalTime(_time){
+    var _sec = Math.floor(_time % 60),
+        _min = Math.floor(_time / 60);
+    playTotalTimeNode.text(formatTime(_min) + ":" + formatTime(_sec));
+}
+function resetTotal(_time){
+	_allTimer = clearInterval(_allTimer);
+	playTotalTime = _time === undefined ? 12 * 60 : _time;
+	updateTotalTime(playTotalTime);
+}
+function startTotal(){
+	_allTimer = setInterval(function(){
+		if (playTotalTime <= 0) {
+			pauseTotal();
+			return;
+		}
+	    playTotalTime--;
+	    updateTotalTime(playTotalTime);
+	},1000);
+}
+function pauseTotal(){
+	_allTimer = clearInterval(_allTimer);
+}
+// 24倒计时逻辑
+var _24Timer;
+function update24Time(_time){
+    play24TimeNode.text(_time);
+}
+function reset24(){
+	_24Timer = clearInterval(_24Timer);
+	play24Time = 1 * 24;
+	update24Time(play24Time);
+}
+function start24(){
+	_24Timer = setInterval(function(){
+		if (play24Time <= 0) {
+			pause24();
+			return;
+		}
+	    play24Time--;
+	    update24Time(play24Time);
+	},1000);
+}
+function pause24(){
+	_24Timer = clearInterval(_24Timer);
+}
+// init console
+var consoleDiv = $("#console"),
+    consoleForm = $("#consoleForm");
+$("input[name=teama]").blur(function(){
+	var v = $(this).val();
+	$("#nameRedDiv").text(v);
+})
+$("input[name=teamb]").blur(function(){
+	var v = $(this).val();
+	$("#nameGreenDiv").text(v);
+})
+$("input[name=updatea]").click(function(){
+	var v = $("input[name=scorea]").val();
+	scoreRed = parseInt(v);
+	setRed(scoreRed);
+})
+$("input[name=updateb]").click(function(){
+	var v = $("input[name=scoreb]").val();
+	scoreGreen = parseInt(v);
+	setGreen(scoreGreen);
+})
+$("input[name=updatet]").click(function(){
+	var m = $("input[name=mtime]").val(),
+	    s = $("input[name=stime]").val();
+	m = parseInt(m);
+	s = parseInt(s);
+	resetTotal(m * 60 + s);
+})
+$("input[name=period]").click(function(){
+	var v = $(this).val();
+	$("#playPeriod").text("第" + v + "节");
+})
+
+// init application
+$(document).keyup(function(event){
+    console.log(event.keyCode);
+    switch (event.keyCode) {
+    case 32: // space
+        break;
+   	case 13: // enter
+        !_allTimer ? startTotal() : pauseTotal();
+        break;
+    case 79: // o
+        reset24();
+        break;
+    case 80: // p
+        !_24Timer ? start24() : pause24();
+        break;
+    case 49: // 1
+    case 82: // r
+        plusRed();
+        break;
+    case 50: // 2
+    case 71: // g
+        plusGreen();
+        break;
+    case 51: // 3
+        minusRed();
+        break;
+    case 52: // 4
+        minusGreen();
+        break;
+    case 67: // c
+        var _bottom = consoleDiv.css("bottom");
+        _bottom = parseInt(_bottom);
+        consoleDiv.animate({
+		    bottom: _bottom >= 0 ? "-240" : "0"
+		});
+		break;
+    }
+});
+$(document).ready(function(){
+	resetTotal();
+	reset24();
+});
+</script>
+</body>
+</html>
